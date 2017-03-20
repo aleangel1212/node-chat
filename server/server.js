@@ -17,6 +17,10 @@ io.on('connection',(socket)=>{
 		"text":"Someone has joined the chat"
 	});
 
+	socket.on('join',(params,callback)=>{
+		socket.join(params.room);
+	});
+
 	socket.on('disconnect',()=>{
 		console.log("User disconnected");
 		socket.broadcast.emit('statusMessage',{
