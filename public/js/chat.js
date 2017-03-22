@@ -1,7 +1,8 @@
 var socket = io();
 
+var params = jQuery.deparam(window.location.search);
+
 socket.on('connect',function(){
-	var params = jQuery.deparam(window.location.search);
 
 	socket.emit('join', params, function(err){
 		if (err) {
@@ -33,7 +34,7 @@ socket.on('statusMessage',function(data){
 jQuery('#message-form').on('submit', function(e){
 	e.preventDefault();
 	socket.emit('createMessage',{
-		"from":"User",
+		"from":params.name,
 		"text":jQuery('[name=message]').val()
 	});
 	jQuery('[name=message]').val('');

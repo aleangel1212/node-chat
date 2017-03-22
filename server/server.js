@@ -12,34 +12,35 @@ var io = socketIO(server);
 app.use(express.static(publicPath));
 
 io.on('connection',(socket)=>{
-	console.log("New user connected");
-	socket.broadcast.emit('statusMessage',{
-		"text":"Someone has joined the chat"
-	});
 
 	socket.on('join',(params,callback)=>{
 		socket.join(params.room);
-	});
 
-	socket.on('disconnect',()=>{
-		console.log("User disconnected");
-		socket.broadcast.emit('statusMessage',{
-			"text":"Someone has left the chat"
+		console.log("New user connected");
+		socket.broadcast.to(params.room).emit('statusMessage',{
+			"text":"Someone has joined the chat"
 		});
-	});
 
-	socket.on('createMessage',(data)=>{
-		console.log("Create message");
-		var time = new Date().getTime();
-		socket.broadcast.emit('newMessage',{
-			"from":data.from,
-			"text":data.text,
-			"createdAt": time
+		socket.on('disconnect',()=>{
+			console.log("User disconnected");
+			socket.broadcast.to(params.room).emit('statusMessage',{
+				"text":"Someone has left the chat"
+			});
 		});
-		socket.emit('userMessage',{
-			"from":"Me",
-			"text":data.text,
-			"createdAt": time
+
+		socket.on('createMessage',(data)=>{
+			console.log("Create message");
+			var time = new Date().getTime();
+			socket.broadcast.to(params.room).emit('newMessage',{
+				"from":data.from,
+				"text":data.text,
+				"createdAt": time
+			});
+			socket.emit('userMessage',{
+				"from":"Me",
+				"text":data.text,
+				"createdAt": time
+			});
 		});
 	});
 });
